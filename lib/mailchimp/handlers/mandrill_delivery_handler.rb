@@ -16,7 +16,9 @@ module Mailchimp
           :from_name => settings[:from_name],
           :from_email => message.from.first,
           :to => ensure_mandrill_compatible_mail_format(message.to)
-        }
+        },
+        :headers => {}
+
       }
 
       [:html, :text].each do |format|
@@ -26,9 +28,10 @@ module Mailchimp
 
       message_payload[:tags] = settings[:tags] if settings[:tags]
 
-      message_payload[:tags] = message["X-MC-Tags"] unless message["X-MC-Tags"].blank?
-      message_payload[:google_analytics_domains] = message['X-MC-GoogleAnalytics'] unless message['X-MC-GoogleAnalytics'].blank?
-      message_payload[:google_analytics_campaign] = message['X-MC-GoogleAnalyticsCampaign'] unless message['X-MC-GoogleAnalyticsCampaign'].blank?
+
+      ['X-MC-Tags', 'X-MC-GoogleAnalytics', 'X-MC-GoogleAnalyticsCampaign'].each do |header|
+        message_payload[:headers][header] = message[header] unless message[header].blank?
+      end
 
       api_key = message.header['api-key'].blank? ? settings[:api_key] : message.header['api-key']
 
