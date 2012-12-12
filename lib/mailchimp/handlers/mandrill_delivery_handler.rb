@@ -29,7 +29,7 @@ module Mailchimp
       #payload parameters that take an array but that come in as a string
       ["tags", 'google_analytics_domains', 'google_analytics_campaign'].each do |parameter|
         next if message[parameter].blank?
-        message_payload[parameter] = message[parameter].value.split(",")
+        message_payload[:message][parameter] = message[parameter].value.split(",")
       end
 
       api_key = message.header['api-key'].blank? ? settings[:api_key] : message.header['api-key']
