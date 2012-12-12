@@ -26,6 +26,10 @@ module Mailchimp
 
       message_payload[:tags] = settings[:tags] if settings[:tags]
 
+      message_payload[:tags] = message["X-MC-Tags"] unless message["X-MC-Tags"].blank?
+      message_payload[:google_analytics_domains] = message['X-MC-GoogleAnalytics'] unless header['X-MC-GoogleAnalytics'].blank?
+      message_payload[:google_analytics_campaign] = message['X-MC-GoogleAnalyticsCampaign'] unless message['X-MC-GoogleAnalyticsCampaign'].blank?
+
       api_key = message.header['api-key'].blank? ? settings[:api_key] : message.header['api-key']
 
       Mailchimp::Mandrill.new(api_key).messages_send(message_payload)
